@@ -1,0 +1,14 @@
+{
+  "full_name": "Your Name",
+  "email": "you@example.com",
+  "github_username": "gh-username",
+  "description": "A short description of the project.",
+  "role_name": "Name of Ansible role",
+  "repo_name": "{{ cookiecutter.role_name }}",
+  "ansible_version": "1.9.6",
+  "role_hosts": "all",
+  "role_use_sudo": true,
+  "year": "2017",
+  "ansible_test_framework": ["molecule", "test-kitchen"],
+  "ansible_test_driver": ["docker", "vagrant"]
+}

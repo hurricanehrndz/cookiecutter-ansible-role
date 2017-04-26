@@ -1,0 +1,13 @@
+---
+galaxy_info:
+  author: {{ cookiecutter.full_name }}
+  description: {{ cookiecutter.description }}
+  license: MIT
+  platforms:
+    - name: Ubuntu
+      versions:
+      - xenial
+  min_ansible_version: {{ cookiecutter.ansible_version }}
+  galaxy_tags:
+    - {{ cookiecutter.role_name }}
+dependencies: []

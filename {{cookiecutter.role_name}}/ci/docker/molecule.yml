@@ -1,0 +1,18 @@
+---
+driver:
+  name: {{ cookiecutter.ansible_test_driver }}
+
+
+docker:
+  containers:
+    - name: test-role-{{ cookiecutter.role_name }}-xenial64
+      image: ubuntu
+      image_version: 16.04
+
+
+verifier:
+  name: testinfra
+
+
+ansible:
+  playbook: tests/playbook.yml

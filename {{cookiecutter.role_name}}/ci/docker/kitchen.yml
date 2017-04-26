@@ -1,0 +1,38 @@
+---
+driver:
+  name: docker
+  priviledge: true
+  use_sudo: false
+
+provisioner:
+  # name of the host
+  hosts: test-kitchen
+  # use an ansible playbook to provision our server
+  name: ansible_playbook
+  ansible_verbose: true
+  ansible_verbosity: 2
+  require_ansible_repo: false
+  require_ansible_omnibus: true
+  ansible_version: {{ cookiecutter.ansible_version }}
+  require_chef_for_busser: false
+  sudo: {{ cookiecutter.role_use_sudo }}
+
+transport:
+  max_ssh_sessions: 6
+
+platforms:
+  - name: ubuntu-16.04
+    driver_config:
+      image: ubuntu:16.04
+      platform: ubuntu
+      instance_name: test-role-{{ cookiecutter.role_name }}-xenial64
+      provision_command:
+        - echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && locale-gen
+
+verifier:
+  name: serverspec
+  sudo_path: {{ cookiecutter.role_use_sudo }}
+
+suites:
+  # suites found at /test/integration/$test-name
+  - name: default

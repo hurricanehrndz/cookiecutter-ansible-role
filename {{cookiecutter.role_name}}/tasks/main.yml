@@ -1,0 +1,4 @@
+---
+# tasks file for {{ cookiecutter.role_name }}
+- include: install.yml
+- include: configure.yml
