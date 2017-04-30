@@ -76,3 +76,5 @@ molecule test
 | role_use_sudo  | true  | Indicates that Ansible should use sudo when calling commands in the role definition yml file  |
 | year  | 2017  | Year that repo is to be/was released  |
 
+## Updates:
+29-04-2017: Added custom Dockerfile for test-kitchen with systemd support.

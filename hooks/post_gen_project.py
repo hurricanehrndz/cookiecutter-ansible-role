@@ -57,6 +57,8 @@ ci_folder = 'ci'
 
 
 def configure_continuos_integretion():
+    if ansible_test_driver != 'docker':
+        shutil.rmtree('.docker')
     if ansible_test_framework == 'test-kitchen':
         shutil.rmtree(molecule_test_folder)
         shutil.copyfile(os.path.join(ci_folder,

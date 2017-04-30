@@ -1,7 +1,6 @@
 ---
 driver:
   name: docker
-  priviledge: true
   use_sudo: false
 
 provisioner:
@@ -9,8 +8,7 @@ provisioner:
   hosts: test-kitchen
   # use an ansible playbook to provision our server
   name: ansible_playbook
-  ansible_verbose: true
-  ansible_verbosity: 2
+  ansible_verbose: false
   require_ansible_repo: false
   require_ansible_omnibus: true
   ansible_version: {{ cookiecutter.ansible_version }}
@@ -23,11 +21,18 @@ transport:
 platforms:
   - name: ubuntu-16.04
     driver_config:
-      image: ubuntu:16.04
+      run_command: /sbin/init
+      dockerfile: .docker/xenial/Dockerfile
       platform: ubuntu
       instance_name: test-role-{{ cookiecutter.role_name }}-xenial64
-      provision_command:
-        - echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && locale-gen
+      cap_add:
+        - SYS_ADMIN
+      volume:
+        - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      run_options:
+        tmpfs:
+        - /tmp
+        - /run
 
 verifier:
   name: serverspec
@@ -36,3 +41,8 @@ verifier:
 suites:
   # suites found at /test/integration/$test-name
   - name: default
+    verifier:
+      patterns:
+        - roles/{{ cookiecutter.role_name }}/test/integration/default/serverspec/*_spec.rb
+      bundler_path: '/usr/local/bin'
+      rspec_path: '/usr/local/bin'
