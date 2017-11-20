@@ -1,21 +1,29 @@
-FROM ubuntu:16.04
+FROM ubuntu:rolling
 
 ENV DEBIAN_FRONTEND="noninteractive" container="docker"
 
 RUN apt-get update \
+ && apt-get upgrade -y \
  && apt-get install -y \
+	apt-utils \
 	curl \
+	locales \
 	lsb-release \
 	net-tools \
 	openssh-server \
+	python-pip \
+	python2.7 \
 	sudo \
 	systemd \
+ && pip install --upgrade pip \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+ && login_shell=$(command -v bash) \
  && if ! getent passwd <%= @username %>; then \
-      useradd -d /home/<%= @username %> -m -s /bin/bash -p '*' <%= @username %>; \
+      useradd -u 9000 -d /home/<%= @username %> -m -s "${login_shell}" -p '*' <%= @username %>; \
     fi \
- && echo "<%= @username %> ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers \
+ && echo "<%= @username %> ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/kitchen \
+ && chmod 440 /etc/sudoers.d/kitchen \
  && echo "Defaults !requiretty" >> /etc/sudoers \
  && mkdir -p /home/<%= @username %>/.ssh \
  && chown -R <%= @username %> /home/<%= @username %>/.ssh \
@@ -39,7 +47,21 @@ RUN apt-get update \
  && sed -ri 's/^#?UsePrivilegeSeparation\s+.*/UsePrivilegeSeparation no/' /etc/ssh/sshd_config \
  && echo "UseDNS=no" >> /etc/ssh/sshd_config \
  && systemctl set-default multi-user.target \
- && systemctl preset ssh
+ && ln -s /lib/systemd/system/systemd-journald.service /etc/systemd/system/multi-user.target.wants/systemd-journald.service \
+ && ln -s /lib/systemd/system/sshd.service /etc/systemd/system/multi-user.target.wants/sshd.service \
+ && echo $'[Unit]\
+\nDescription=Finish boot up\
+\nAfter=ssh.service\
+\n\
+\n[Service]\
+\nType=oneshot\
+\nRemainAfterExit=yes\
+\nExecStartPre=/bin/sleep 3s\
+\nExecStart=/bin/rm -f /run/nologin\
+\n\
+\n[Install]\
+\nWantedBy=default.target' >> /etc/systemd/system/FinishBootUp.service \
+ && ln -s /etc/systemd/system/FinishBootUp.service /etc/systemd/system/multi-user.target.wants/FinishBootUp.service
 
 EXPOSE 22
 

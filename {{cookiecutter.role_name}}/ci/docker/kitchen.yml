@@ -19,19 +19,57 @@ transport:
   max_ssh_sessions: 6
 
 platforms:
-  - name: ubuntu-16.04
+  - name: ubuntu-rolling
     driver_config:
-      run_command: /sbin/init
-      dockerfile: .docker/xenial/Dockerfile
+      run_command: /lib/systemd/systemd
+      dockerfile: .docker/ubuntu/rolling/Dockerfile
       platform: ubuntu
-      instance_name: test-role-{{ cookiecutter.role_name }}-xenial64
+      instance_name: test-role-{{ cookiecutter.role_name }}-ubuntu-rolling
       cap_add:
         - SYS_ADMIN
       volume:
         - /sys/fs/cgroup:/sys/fs/cgroup:ro
       run_options:
         tmpfs:
-        - /tmp
+        - /run
+  - name: debian-latest
+    driver_config:
+      run_command: /lib/systemd/systemd
+      dockerfile: .docker/debian/latest/Dockerfile
+      platform: debian
+      instance_name: test-role-{{ cookiecutter.role_name }}-debian-latest
+      cap_add:
+        - SYS_ADMIN
+      volume:
+        - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      run_options:
+        tmpfs:
+        - /run
+  - name: fedora-latest
+    driver_config:
+      run_command: /lib/systemd/systemd
+      dockerfile: .docker/fedora/latest/Dockerfile
+      platform: fedora
+      instance_name: test-role-{{ cookiecutter.role_name }}-fedora-latest
+      cap_add:
+        - SYS_ADMIN
+      volume:
+        - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      run_options:
+        tmpfs:
+        - /run
+  - name: opensuse-tumbleweed
+    driver_config:
+      run_command: /usr/lib/systemd/systemd
+      dockerfile: .docker/opensuse/tumbleweed/Dockerfile
+      platform: opensuse
+      instance_name: test-role-{{ cookiecutter.role_name }}-opensuse-tumbleweed
+      cap_add:
+        - SYS_ADMIN
+      volume:
+        - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      run_options:
+        tmpfs:
         - /run
 
 verifier:
@@ -44,5 +82,3 @@ suites:
     verifier:
       patterns:
         - roles/{{ cookiecutter.role_name }}/test/integration/default/serverspec/*_spec.rb
-      bundler_path: '/usr/local/bin'
-      rspec_path: '/usr/local/bin'
