@@ -1,5 +1,6 @@
 FROM opensuse/amd64:tumbleweed
 
+# container env needed by systemd
 ENV container="docker"
 
 RUN zypper --non-interactive --gpg-auto-import-keys ref \
@@ -48,6 +49,7 @@ RUN zypper --non-interactive --gpg-auto-import-keys ref \
  && rm -f /usr/lib/systemd/system/anaconda.target.wants/*  \
  && rm -f /usr/lib/systemd/system/plymouth* \
  && rm -f /usr/lib/systemd/system/systemd-update-utmp* \
+ && sed -ri 's/^#?UsePAM\s+.*/UsePAM no/' /etc/ssh/sshd_config \
  && sed -ri 's/^#?PubkeyAuthentication\s+.*/PubkeyAuthentication yes/' /etc/ssh/sshd_config \
  && sed -ri 's/^#?UsePrivilegeSeparation\s+.*/UsePrivilegeSeparation no/' /etc/ssh/sshd_config \
  && echo "UseDNS=no" >> /etc/ssh/sshd_config \
@@ -56,7 +58,7 @@ RUN zypper --non-interactive --gpg-auto-import-keys ref \
  && ln -s /usr/lib/systemd/system/sshd.service /etc/systemd/system/multi-user.target.wants/sshd.service \
  && echo $'[Unit]\
 \nDescription=Finish boot up\
-\nAfter=ssh.service\
+\nAfter=sshd.service\
 \n\
 \n[Service]\
 \nType=oneshot\
@@ -69,7 +71,8 @@ RUN zypper --non-interactive --gpg-auto-import-keys ref \
  && ln -s /etc/systemd/system/FinishBootUp.service /etc/systemd/system/multi-user.target.wants/FinishBootUp.service \
  && ln -sf /usr/bin/pip2 /etc/alternatives/pip
 
-
+# Graceful systemd shutdown
+STOPSIGNAL SIGRTMIN+3
 
 EXPOSE 22
 

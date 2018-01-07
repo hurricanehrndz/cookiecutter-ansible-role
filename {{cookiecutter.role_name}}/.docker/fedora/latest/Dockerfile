@@ -1,5 +1,6 @@
 FROM fedora:latest
 
+# container env needed by systemd
 ENV container="docker"
 
 RUN dnf clean all \
@@ -45,6 +46,7 @@ RUN dnf clean all \
  && rm -f /lib/systemd/system/anaconda.target.wants/*  \
  && rm -f /lib/systemd/system/plymouth* \
  && rm -f /lib/systemd/system/systemd-update-utmp* \
+ && sed -ri 's/^#?UsePAM\s+.*/UsePAM no/' /etc/ssh/sshd_config \
  && sed -ri 's/^#?PubkeyAuthentication\s+.*/PubkeyAuthentication yes/' /etc/ssh/sshd_config \
  && sed -ri 's/^#?UsePrivilegeSeparation\s+.*/UsePrivilegeSeparation no/' /etc/ssh/sshd_config \
  && echo "UseDNS=no" >> /etc/ssh/sshd_config \
@@ -53,7 +55,7 @@ RUN dnf clean all \
  && ln -s /lib/systemd/system/sshd.service /etc/systemd/system/multi-user.target.wants/sshd.service \
  && echo $'[Unit]\
 \nDescription=Finish boot up\
-\nAfter=ssh.service\
+\nAfter=sshd.service\
 \n\
 \n[Service]\
 \nType=oneshot\
@@ -65,6 +67,8 @@ RUN dnf clean all \
 \nWantedBy=default.target' >> /etc/systemd/system/FinishBootUp.service \
  && ln -s /etc/systemd/system/FinishBootUp.service /etc/systemd/system/multi-user.target.wants/FinishBootUp.service
 
+# Graceful systemd shutdown
+STOPSIGNAL SIGRTMIN+3
 
 EXPOSE 22
 

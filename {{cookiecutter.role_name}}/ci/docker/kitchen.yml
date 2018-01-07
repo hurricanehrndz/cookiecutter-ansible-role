@@ -31,7 +31,24 @@ platforms:
         - /sys/fs/cgroup:/sys/fs/cgroup:ro
       run_options:
         tmpfs:
-        - /run
+          - /run
+          - /run/lock
+
+  - name: ubuntu-stable
+    driver_config:
+      run_command: /lib/systemd/systemd
+      dockerfile: .docker/ubuntu/stable/Dockerfile
+      platform: ubuntu
+      instance_name: test-role-{{ cookiecutter.role_name }}-ubuntu-stable
+      cap_add:
+        - SYS_ADMIN
+      volume:
+        - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      run_options:
+        tmpfs:
+          - /run
+          - /run/lock
+
   - name: debian-latest
     driver_config:
       run_command: /lib/systemd/systemd
@@ -44,7 +61,9 @@ platforms:
         - /sys/fs/cgroup:/sys/fs/cgroup:ro
       run_options:
         tmpfs:
-        - /run
+          - /run
+          - /run/lock
+
   - name: fedora-latest
     driver_config:
       run_command: /lib/systemd/systemd
@@ -57,7 +76,9 @@ platforms:
         - /sys/fs/cgroup:/sys/fs/cgroup:ro
       run_options:
         tmpfs:
-        - /run
+          - /run
+          - /run/lock
+
   - name: opensuse-tumbleweed
     driver_config:
       run_command: /usr/lib/systemd/systemd
@@ -70,7 +91,8 @@ platforms:
         - /sys/fs/cgroup:/sys/fs/cgroup:ro
       run_options:
         tmpfs:
-        - /run
+          - /run
+          - /run/lock
 
 verifier:
   name: serverspec

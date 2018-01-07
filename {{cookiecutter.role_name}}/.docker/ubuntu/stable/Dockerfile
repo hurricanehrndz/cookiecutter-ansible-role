@@ -1,4 +1,4 @@
-FROM ubuntu:rolling
+FROM ubuntu:stable
 
 # container env needed by systemd
 ENV DEBIAN_FRONTEND="noninteractive" container="docker"

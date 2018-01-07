@@ -1,5 +1,6 @@
 FROM debian:latest
 
+# container env needed by systemd
 ENV DEBIAN_FRONTEND="noninteractive" container="docker"
 
 RUN apt-get update \
@@ -48,7 +49,7 @@ RUN apt-get update \
  && echo "UseDNS=no" >> /etc/ssh/sshd_config \
  && systemctl set-default multi-user.target \
  && ln -s /lib/systemd/system/systemd-journald.service /etc/systemd/system/multi-user.target.wants/systemd-journald.service \
- && ln -s /lib/systemd/system/sshd.service /etc/systemd/system/multi-user.target.wants/sshd.service \
+ && ln -s /lib/systemd/system/ssh.service /etc/systemd/system/multi-user.target.wants/ssh.service \
  && echo $'[Unit]\
 \nDescription=Finish boot up\
 \nAfter=ssh.service\
@@ -62,6 +63,9 @@ RUN apt-get update \
 \n[Install]\
 \nWantedBy=default.target' >> /etc/systemd/system/FinishBootUp.service \
  && ln -s /etc/systemd/system/FinishBootUp.service /etc/systemd/system/multi-user.target.wants/FinishBootUp.service
+
+# Graceful systemd shutdown
+STOPSIGNAL SIGRTMIN+3
 
 EXPOSE 22
 
