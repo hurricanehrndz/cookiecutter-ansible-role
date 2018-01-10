@@ -49,12 +49,27 @@ platforms:
           - /run
           - /run/lock
 
-  - name: debian-latest
+  - name: debian-stable
     driver_config:
       run_command: /lib/systemd/systemd
-      dockerfile: .docker/debian/latest/Dockerfile
+      dockerfile: .docker/debian/stable/Dockerfile
       platform: debian
-      instance_name: test-role-{{ cookiecutter.role_name }}-debian-latest
+      instance_name: test-role-{{ cookiecutter.role_name }}-debian-stable
+      cap_add:
+        - SYS_ADMIN
+      volume:
+        - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      run_options:
+        tmpfs:
+          - /run
+          - /run/lock
+
+  - name: debian-oldstable
+    driver_config:
+      run_command: /lib/systemd/systemd
+      dockerfile: .docker/debian/oldstable/Dockerfile
+      platform: debian
+      instance_name: test-role-{{ cookiecutter.role_name }}-debian-oldstable
       cap_add:
         - SYS_ADMIN
       volume:
